@@ -33,21 +33,22 @@ def add_advert():
 
 @app.route('/addtag/<id>', methods=['POST'])
 def add_tag(id):
-    body = request.get_json()
-    advert = Advert.objects.get(id=id)
-    advert.tags = json.loads(advert.to_json())['tags'] + body['tags']
-    advert.save()
-    result = advert.to_json()
+    result = update_advert(id, request.get_json(), 'tags')
     return Response(result, mimetype="application/json", status=200)
+
 
 @app.route('/addcom/<id>', methods=['POST'])
 def add_comment(id):
-    body = request.get_json()
-    advert = Advert.objects.get(id=id)
-    advert['comments'] = json.loads(advert.to_json())['comments'] + body['comments']
-    advert.save()
-    result = advert.to_json()
+    result = update_advert(id, request.get_json(), 'comments')
     return Response(result, mimetype="application/json", status=200)
+
+
+def update_advert(id, body, field):
+    advert = Advert.objects.get(id=id)
+    advert[field] = json.loads(advert.to_json())[field] + body[field]
+    advert.save()
+    return advert.to_json()
+
 
 @app.route('/ads/<id>', methods=['GET'])
 @cache.cached()
