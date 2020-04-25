@@ -40,6 +40,14 @@ def add_tag(id):
     result = advert.to_json()
     return Response(result, mimetype="application/json", status=200)
 
+@app.route('/addcom/<id>', methods=['POST'])
+def add_comment(id):
+    body = request.get_json()
+    advert = Advert.objects.get(id=id)
+    advert['comments'] = json.loads(advert.to_json())['comments'] + body['comments']
+    advert.save()
+    result = advert.to_json()
+    return Response(result, mimetype="application/json", status=200)
 
 @app.route('/ads/<id>', methods=['GET'])
 @cache.cached()
