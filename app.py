@@ -23,6 +23,14 @@ def get_all_adverts():
     return Response(adverts, mimetype="application/json", status=200)
 
 
+@app.route('/stats/<id>', methods=['GET'])
+def get_stats(id):
+    if request.method == 'GET':
+        advert = Advert.objects.get(id=id)
+        result = json.dumps({'tags: ': len(advert.tags), 'comments: ': len(advert.comments)})
+        return Response(result, mimetype="application/json", status=200)
+
+
 @app.route('/add', methods=['POST'])
 def add_advert():
     body = request.get_json()
