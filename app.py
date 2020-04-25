@@ -2,6 +2,7 @@ from flask import Flask, request, Response
 from flask_caching import Cache
 from database.db import initialize_db
 from database.models import Advert
+import json
 
 app = Flask(__name__)
 
@@ -26,6 +27,16 @@ def get_all_adverts():
 def add_advert():
     body = request.get_json()
     advert = Advert(**body).save()
+    result = advert.to_json()
+    return Response(result, mimetype="application/json", status=200)
+
+
+@app.route('/addtag/<id>', methods=['POST'])
+def add_tag(id):
+    body = request.get_json()
+    advert = Advert.objects.get(id=id)
+    advert.tags = json.loads(advert.to_json())['tags'] + body['tags']
+    advert.save()
     result = advert.to_json()
     return Response(result, mimetype="application/json", status=200)
 
